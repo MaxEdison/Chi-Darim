@@ -1,6 +1,15 @@
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
 
+from flask import Flask, request, jsonify, send_file
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.support import expected_conditions as EC
+
+
 def init_driver():
     options = webdriver.FirefoxOptions()
     options.set_preference("marionette.port", 2828)
@@ -9,7 +18,6 @@ def init_driver():
     driver = webdriver.Firefox(service=service, options=options)
 
     return driver
-
 def get_table_data(x_path, driver):
 
     # Wait for the reservation table to load
@@ -55,3 +63,33 @@ def get_table_data(x_path, driver):
     formatted_text = formatted_text.replace("@", "<b>[رستوران]</b> ")
     return formatted_text
 
+captcha_dir = config.CAPTCHA_DIR
+
+app = Flask(__name__)
+sessions = {}
+
+@app.route('/get_captcha', methods=['GET'])
+def capture_captcha():
+    user_id = request.args.get('user_id') 
+    driver = sessions.get(str(user_id))
+
+    if driver:
+        driver.quit()
+    driver = init_driver()
+    sessions[user_id] = driver
+
+    try:
+        driver.get()
+
+        captcha_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "Img1"))
+        )
+
+        captcha_filename = f"captcha_{user_id}.png"
+        captcha_path = os.path.join(captcha_dir, captcha_filename)
+        captcha_element.screenshot(captcha_path)
+        
+        return send_file(captcha_path, mimetype='image/png')
+
+    except Exception as e:
+        print(f"Error in capture_captcha: {e}\nConnection closed.")
