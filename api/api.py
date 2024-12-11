@@ -9,6 +9,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 
+import time
+import os
+import sys
+from bs4 import BeautifulSoup
+
 
 def init_driver():
     options = webdriver.FirefoxOptions()
@@ -20,7 +25,7 @@ def init_driver():
     return driver
 def get_table_data(x_path, driver):
 
-    # Wait for the reservation table to load
+    # Load reservation table
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, x_path))
     )
@@ -79,7 +84,7 @@ def capture_captcha():
     sessions[user_id] = driver
 
     try:
-        driver.get()
+        driver.get(config.WEBSITE_URL)
 
         captcha_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "Img1"))
@@ -88,8 +93,35 @@ def capture_captcha():
         captcha_filename = f"captcha_{user_id}.png"
         captcha_path = os.path.join(captcha_dir, captcha_filename)
         captcha_element.screenshot(captcha_path)
-        
+
         return send_file(captcha_path, mimetype='image/png')
 
     except Exception as e:
         print(f"Error in capture_captcha: {e}\nConnection closed.")
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    user_id = data['user_id']
+
+    usrName = config.USERNAME
+    usrPass = config.PASSWORD
+    captcha_input = data['captcha']
+    captcha_input = str(captcha_input)
+
+    driver = sessions.get(str(user_id))
+
+    driver.find_element(By.ID, "txtUsernamePlain").send_keys(usrName)
+    driver.find_element(By.ID, "txtPasswordPlain").send_keys(usrPass)
+    driver.find_element(By.ID, "txtCaptcha").send_keys(captcha_input)
+    
+    driver.find_element(By.ID, "btnEncript").click()
+    time.sleep(5) 
+
+    if "پروفایل" in driver.page_source:
+        print("Loged in")
+        return jsonify({"status": "success"})
+    else:
+        print("Can't Login\nstayed on:", driver.title)
+        return jsonify({"status": "failed"})
