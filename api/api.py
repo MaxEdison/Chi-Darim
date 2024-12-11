@@ -125,3 +125,43 @@ def login():
     else:
         print("Can't Login\nstayed on:", driver.title)
         return jsonify({"status": "failed"})
+
+
+@app.route('/fetch_data', methods=['GET'])
+def fetch_data():
+    data = request.json
+    user_id = data['user_id']
+    week_choice = data['week']  # "this" or "next"
+
+    driver = sessions.get(str(user_id))
+    if not driver:
+        return jsonify({"error": "Session not found"}), 404
+
+    # Navigate to reservation page
+    driver.get(config.WEBSITE_URL + "Reservation/Reservation.aspx")
+
+    if week_choice == "thisweek":
+        breakfast_data = get_table_data('//*[@id="cphMain_grdReservationBreakfast"]', driver)
+        lunch_data = get_table_data('//*[@id="cphMain_grdReservationLunch"]', driver)
+        dinner_data = get_table_data('//*[@id="cphMain_grdReservationDinner"]', driver)
+    
+    elif week_choice == "nextweek":
+        nxt_week = driver.find_element(By.ID, "cphMain_imgbtnNextWeek")
+        nxt_week.click()
+        time.sleep(3)
+
+        breakfast_data = get_table_data('//*[@id="cphMain_grdReservationBreakfast"]', driver)
+        lunch_data = get_table_data('//*[@id="cphMain_grdReservationLunch"]', driver)
+        dinner_data = get_table_data('//*[@id="cphMain_grdReservationDinner"]', driver)
+    
+    driver.quit()
+    
+    return jsonify({
+        "breakfast": breakfast_data,
+        "lunch": lunch_data,
+        "dinner": dinner_data
+    })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
