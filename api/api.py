@@ -1,6 +1,3 @@
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import config
-
 from flask import Flask, request, jsonify, send_file
 
 from selenium import webdriver
@@ -13,6 +10,9 @@ import time
 import os
 import sys
 from bs4 import BeautifulSoup
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import config
 
 
 def init_driver():
