@@ -21,3 +21,20 @@ function setStep($path , $chat_id , $step , $type){
     fwrite($file, $jsonString);
     fclose($file);
 }
+
+function getStep($path , $chat_id){
+    
+    $jsonString = file_get_contents($path);
+    $data = json_decode($jsonString, true)["users"];
+
+    foreach ($data as $user){
+        foreach($user as $id => $step){
+            if ($chat_id == $id){
+                return $step;
+            }
+        }
+    }
+    
+    setStep($path, $chat_id, "start", "new");
+    return "start";
+}
