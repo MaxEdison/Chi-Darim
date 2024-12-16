@@ -6,11 +6,11 @@ function setStep($path , $chat_id , $step , $type){
     $data = json_decode($jsonString , true);
     
     if ($type == "new"){
-        array_push($data["users"] , [$chat_id => $step]);
+        array_push($data["users"] , [$chat_id => $step, "admin" => 0]);
     } else if ($type == "old") {
         for ($i = 0 ; $i < count($data["users"]) ; $i++){
             if (array_keys($data["users"][$i])[0] == $chat_id){
-                $data["users"][$i] = [$chat_id => $step];
+                $data["users"][$i][$chat_id] = $step;
                 break;
             }
         }
@@ -25,13 +25,11 @@ function setStep($path , $chat_id , $step , $type){
 function getStep($path , $chat_id){
     
     $jsonString = file_get_contents($path);
-    $data = json_decode($jsonString, true)["users"];
+    $data = json_decode($jsonString, true);
 
-    foreach ($data as $user){
-        foreach($user as $id => $step){
-            if ($chat_id == $id){
-                return $step;
-            }
+    for ($i = 0 ; $i < count($data["users"]) ; $i++){
+        if (array_keys($data["users"][$i])[0] == $chat_id){
+            return $data["users"][$i];
         }
     }
     
