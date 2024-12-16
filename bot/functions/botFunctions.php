@@ -15,7 +15,7 @@ function bot(string $method, array $params) {
 
 function setWebhook() {
     $result = bot("setWebhook", [
-        "url" => "Your webhook url"
+        "url" => "https://kes-daniel.aranserversub.site/mian.php"
     ]);
     return $result;
 }
@@ -24,7 +24,8 @@ function sendMessage($chat_id, $text, $reply_markup = null) {
 
     $data = [
         'chat_id' => $chat_id,
-        'text' => $text
+        'text' => $text,
+        'parse_mode' => 'HTML'
     ];
     if ($reply_markup != null) {
         $data['reply_markup'] = $reply_markup;
@@ -48,11 +49,12 @@ function sendChatAction($chat_id, $action) {
         ]);
 }
     
+
 function debug($data, $reply_markup = null) {
     $result = print_r($data, true);
     if ($reply_markup == null) {
-        return sendMessage(ADMIN, $result);
+        return sendMessage( ADMIN, $result);
     } else {
-        return sendMessage(ADMIN, $result, $reply_markup);
+        return sendMessage( ADMIN, $result, $reply_markup);
     }
 }
