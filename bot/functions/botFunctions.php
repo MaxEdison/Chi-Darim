@@ -15,7 +15,7 @@ function bot(string $method, array $params) {
 
 function setWebhook() {
     $result = bot("setWebhook", [
-        "url" => "https://kes-daniel.aranserversub.site/mian.php"
+        "url" => "YOUR WEBHOOK URL"
     ]);
     return $result;
 }
