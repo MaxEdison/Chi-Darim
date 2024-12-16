@@ -68,11 +68,11 @@ if ($user["admin"] == 1 && $user[$chat_id] == "solveCaptcha"){
         "http://109.95.61.92:5000/login",
         ['user_id' => $chat_id, 'captcha' => $text]
     );
-    debug(sendMessage($chat_id , $login_response));
     if ($login_response['status'] == 'success'){
         fetchData($databaseJSON , $chat_id);
     }
     setStep($userStateJSON , $chat_id , "chooseWeek" , "old");
+    sendMessage($chat_id , "بروزرسانی شد!");
 }
 
 if (in_array($user[$chat_id] ,["thisWeek", "nextWeek"]) && in_array($text , ["صبحانه" , "نهار" , "شام"])){
