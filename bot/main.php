@@ -75,19 +75,15 @@ if ($user["admin"] == 1 && $user[$chat_id] == "solveCaptcha"){
     sendMessage($chat_id , "بروزرسانی شد!");
 }
 
-if (in_array($user[$chat_id] ,["thisWeek", "nextWeek"]) && in_array($text , ["صبحانه" , "نهار" , "شام"])){
-    if ($text == "صبحانه"  && $user[$chat_id] == "thisWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "breakfast"));
-    } else if ($text == "نهار"  && $user[$chat_id] == "thisWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "lunch"));
-    } else if ($text == "شام"  && $user[$chat_id] == "thisWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "dinner"));
-    } else if ($text == "صبحانه" && $user[$chat_id] == "nextWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "nextBreakfast"));
-    } else if ($text == "نهار"  && $user[$chat_id] == "nextWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "nextLunch"));
-    } else if ($text == "شام"  && $user[$chat_id] == "nextWeek"){
-        sendMessage($chat_id , getMeal($databaseJSON , $user["$chat_id"] , "nextDinner"));
-    }
+if (in_array($user[$chat_id], ["thisWeek", "nextWeek"]) && in_array($text, ["صبحانه", "نهار", "شام"])) {
+    
+    $mealType = match ($text) {
+        "صبحانه" => $user[$chat_id] === "thisWeek" ? "breakfast" : "nextBreakfast",
+        "نهار"   => $user[$chat_id] === "thisWeek" ? "lunch"     : "nextLunch",
+        "شام"   => $user[$chat_id] === "thisWeek" ? "dinner"    : "nextDinner",
+    };
+
+    sendMessage($chat_id, getMeal($databaseJSON, $user[$chat_id], $mealType));
     die;
 }
+
