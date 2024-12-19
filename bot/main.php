@@ -20,13 +20,9 @@ if ($text == "/start"){
 }
 
 if ($text == "چی داریم ؟"){
-    if ($user["admin"] == 1){
-        setStep($userStateJSON , $from_id , "chooseWeek" , "old");
-        sendMessage($from_id , "کدومش ؟" , $admin_weeks_keyboard);
-    } else {
-        setStep($userStateJSON , $from_id , "chooseWeek" , "old");
-        sendMessage($from_id , "کدومش ؟" , $weeks_keyboard);
-    }
+    $keyboard = $admin_weeks_keyboard ? $user["admin"] == 1 : $weeks_keyboard;
+    setStep($userStateJSON , $from_id , "chooseWeek" , "old");
+    sendMessage($from_id , "کدومش ؟" , $keyboard);
     die;
 }
 
