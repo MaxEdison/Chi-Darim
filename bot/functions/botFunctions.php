@@ -15,7 +15,8 @@ function bot(string $method, array $params) {
 
 function setWebhook() {
     $result = bot("setWebhook", [
-        "url" => "YOUR WEBHOOK URL"
+        "url" => "YOUR WEBHOOK URL",
+        "drop_pending_updates" => true
     ]);
     return $result;
 }
