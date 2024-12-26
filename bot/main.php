@@ -1,16 +1,16 @@
 <?php
 
-require "path.php";
-require $configPHP;
-require $keyboardsPHP;
-require $botFunctionsPHP;
-require $userFunctionsPHP;
-require $requestFunctionsPHP;
+require_once "path.php";
+require_once $configPHP;
+require_once $keyboardsPHP;
+require_once $botFunctionsPHP;
+require_once $userFunctionsPHP;
+require_once $requestFunctionsPHP;
 
 
 $input = json_decode(file_get_contents("php://input") , true);
 
-require $variablesPHP;
+require_once $variablesPHP;
 
 $user = getStep($userStateJSON ,$from_id );
 
